@@ -5,6 +5,7 @@ Tests of the code interacting with the Asgard API.
 import os
 import unittest
 import itertools
+import boto3
 import boto
 import mock
 import requests_mock
@@ -1014,22 +1015,32 @@ class TestAsgard(unittest.TestCase):
         Setup all the variables for an ASG deployment.
         """
         # Make the AMI
-        ec2 = boto.connect_ec2()
-        reservation = ec2.run_instances(random_ami_id())
-        instance_id = reservation.instances[0].id
-        ami_id = ec2.create_image(instance_id, "Existing AMI")
-        ami = ec2.get_all_images(ami_id)[0]
-        ami.add_tag("environment", "foo")
-        ami.add_tag("deployment", "bar")
-        ami.add_tag("play", "baz")
+        ec2 = boto3.client('ec2')
+        reservation = ec2.run_instances(ImageId=random_ami_id(), MinCount=1, MaxCount=1)
+        instance_id = reservation['Instances'][0]['InstanceId']
+        response = ec2.create_image(
+            InstanceId=instance_id, Name="Existing AMI"
+        )
 
-        # Make the current ASGs
-        # pylint: disable=attribute-defined-outside-init
+        import pdb;
+        pdb.set_trace()
+        resp = ec2.describe_images(ImageIds=[response['ImageId']])
+        ami_id = resp['Images'][0]['ImageId']
+
+        # self.test_asg_tags = ec2.create_tags(
+        #     Resources=[ami_id], Tags=[
+        #         {'Key': 'environment', 'Value': 'foo'},
+        #         {'Key': 'deployment', 'Value': 'bar'},
+        #         {'Key': 'play', 'Value': 'baz'}
+        #     ]
+        # )
+
         self.test_asg_tags = {
             "environment": "foo",
             "deployment": "bar",
-            "play": "baz",
+            "play": "baz"
         }
+
 
         self.test_elb_name = "app_elb"
         create_elb(self.test_elb_name)
