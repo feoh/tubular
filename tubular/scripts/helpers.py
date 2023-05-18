@@ -153,12 +153,13 @@ def _setup_all_apis_or_exit(fail_func, fail_code, config):
     retirement flow.
     """
     try:
-        lms_base_url = environ.get('TUBULAR_LMS_HOST',config.get('base_urls',{}).get('lms'))
-        ecommerce_base_url = config['base_urls'].get('ecommerce', None)
-        credentials_base_url = config['base_urls'].get('credentials', None)
-        segment_base_url = config['base_urls'].get('segment', None)
-        demographics_base_url = config['base_urls'].get('demographics', None)
-        license_manager_base_url = config['base_urls'].get('license_manager', None)
+        lms_base_url = environ.get('TUBULAR_LMS_HOST',
+                                   config.get('base_urls',{}).get('lms'))
+        ecommerce_base_url = config.get('base_urls',{}).get('ecommerce', None)
+        credentials_base_url = config.get('base_urls',{}).get('credentials', None)
+        segment_base_url = config.get('base_urls',{}).get('segment', None)
+        demographics_base_url = config.get('base_urls',{}).get('demographics', None)
+        license_manager_base_url = config.get('base_urls',{}).get('license_manager', None)
         client_id = config['client_id']
         client_secret = config['client_secret']
         braze_api_key = config.get('braze_api_key', None)
