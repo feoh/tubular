@@ -153,7 +153,7 @@ def _setup_all_apis_or_exit(fail_func, fail_code, config):
     retirement flow.
     """
     try:
-        lms_base_url = config['base_urls']['lms']
+        lms_base_url = environ.get('TUBULAR_LMS_HOST',config.get('base_urls',{}).get('lms'))
         ecommerce_base_url = config['base_urls'].get('ecommerce', None)
         credentials_base_url = config['base_urls'].get('credentials', None)
         segment_base_url = config['base_urls'].get('segment', None)
